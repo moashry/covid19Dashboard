@@ -20,7 +20,9 @@ ui_header <- dashboardHeader(title = "COVID19 Template",
 ui_sidebar <- dashboardSidebar(
     sidebarMenu(
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-      menuItem("Widgets", tabName = "widgets", icon = icon("th"))
+      menuItem("Widgets", tabName = "widgets", icon = icon("th")),
+      menuItem("Source code", icon = icon("file-code-o"), 
+           href = "https://github.com/moashry/covid19Dashboard")
     )
   )
 
