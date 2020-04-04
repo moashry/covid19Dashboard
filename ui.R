@@ -28,8 +28,8 @@ ui_sidebar <- dashboardSidebar(
 
 ui_tab_dashboard <- tabItem(tabName = "dashboard",
                       fluidRow(
-                        box(plotOutput("plot", height = 250)),
-                        box(plotOutput("plot2", height = 250)),
+                        box(plotlyOutput("plot", height = 250)),
+                        box(plotlyOutput("plot2", height = 250)),
                         box(
                           title = "Country",
                           textInput("country", "Country:", "Egypt")
