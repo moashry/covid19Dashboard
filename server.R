@@ -15,7 +15,7 @@ shinyServer(function(input, output) {
   #  2) Its output type is a plot 
   #
   data <- reactive({
-    my_data <- read_excel("data.xlsx")
+    my_data <- read_excel("data/data.xlsx")
     data_country <- my_data[my_data$countriesAndTerritories==input$country,]
     data_country <- data_country[order(data_country$dateRep),]
     return(data_country)
