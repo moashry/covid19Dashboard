@@ -8,7 +8,7 @@ library("DT")
 library("fs")
 library("wbstats")
 
-source("Utils/utils.R", local = T)
+source("utils/utils.R", local = T)
 
 downloadGithubData <- function() {
   download.file(
@@ -40,13 +40,13 @@ updateData <- function() {
 updateData()
 
 # TODO: Still throws a warning but works for now
-data_confirmed <- read_csv("Data/time_series_covid19_confirmed_global.csv")
-data_deceased  <- read_csv("Data/time_series_covid19_deaths_global.csv")
+data_confirmed <- read_csv("data/time_series_covid19_confirmed_global.csv")
+data_deceased  <- read_csv("data/time_series_covid19_deaths_global.csv")
 # data_recovered <- read_csv("data/time_series_covid19_recovered_global.csv")
 
 # Get latest data
 current_date <- as.Date(names(data_confirmed)[ncol(data_confirmed)], format = "%m/%d/%y")
-changed_date <- file_info("Data/covid19_data.zip")$change_time
+changed_date <- file_info("data/covid19_data.zip")$change_time
 
 # Get evolution data by country
 data_confirmed_sub <- data_confirmed %>%
@@ -109,7 +109,7 @@ data_evolution <- data_evolution %>%
   left_join(population, by = c("Country/Region" = "country"))
 rm(population, countryNamesPop, countryNamesDat, noDataCountries)
 
-write.csv(data_evolution, file = "Data/daily_data.csv")
+write.csv(data_evolution, file = "data/daily_data.csv")
 
 
 data_atDate <- function(inputDate) {

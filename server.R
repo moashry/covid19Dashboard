@@ -16,17 +16,17 @@ shinyServer(function(input, output) {
   #  2) Its output type is a plot 
   #
   
-  # source("Utils/global.R", local = T)
+  # source("utils/global.R", local = T)
 
   data <- reactive({
-    my_data <- read_excel("Data/data.xlsx")
+    my_data <- read_excel("data/data.xlsx")
     data_country <- my_data[my_data$countriesAndTerritories==input$countryList,]
     data_country <- data_country[order(data_country$dateRep),]
     return(data_country)
   })
 
 data_daily_cases <- reactive({
-    data <- read_csv("Data/daily_data.csv")
+    data <- read_csv("data/daily_data.csv")
     data <- as.data.frame(data)
     data <- data[data$'Country/Region'==input$countryList,]
     data <- data[data$var=="confirmed",]
@@ -35,7 +35,7 @@ data_daily_cases <- reactive({
 
 
  data_cumulative_cases <- reactive({
-    confirmed <- read_csv("Data/time_series_covid19_confirmed_global.csv")
+    confirmed <- read_csv("data/time_series_covid19_confirmed_global.csv")
     confirmed <- confirmed[confirmed$`Country/Region`==input$countryList,]
     confirmed_sub <- confirmed %>%
       pivot_longer(names_to = "date", cols = 5:ncol(confirmed)) %>%
@@ -48,7 +48,7 @@ data_daily_cases <- reactive({
   })
 
   data_recovered <- reactive({
-    recovered <- read_csv("Data/time_series_covid19_recovered_global.csv")
+    recovered <- read_csv("data/time_series_covid19_recovered_global.csv")
     recovered <- recovered[recovered$`Country/Region`==input$countryList,]
     recovered_sub <- recovered %>%
       pivot_longer(names_to = "date", cols = 5:ncol(recovered)) %>%
@@ -58,7 +58,7 @@ data_daily_cases <- reactive({
     })
   
   data_deaths <- reactive({
-    deaths <- read_csv("Data/time_series_covid19_deaths_global.csv")
+    deaths <- read_csv("data/time_series_covid19_deaths_global.csv")
     deaths <- deaths[deaths$`Country/Region`==input$countryList,]
     deaths_sub <- deaths %>%
       pivot_longer(names_to = "date", cols = 5:ncol(deaths)) %>%
@@ -68,7 +68,7 @@ data_daily_cases <- reactive({
     })
 
   data_confirmed <- reactive({
-    confirmed <- read_csv("Data/time_series_covid19_confirmed_global.csv")
+    confirmed <- read_csv("data/time_series_covid19_confirmed_global.csv")
     confirmed <- confirmed[confirmed$`Country/Region`==input$countryList,]
     confirmed_sub <- confirmed %>%
       pivot_longer(names_to = "date", cols = 5:ncol(confirmed)) %>%

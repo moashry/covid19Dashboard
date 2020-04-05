@@ -3,7 +3,7 @@ library(shinydashboard)
 library(plotly)
 library("readxl")
 
-my_data <- read_excel("Data/data.xlsx")
+my_data <- read_excel("data/data.xlsx")
 data_country <- unique(my_data$countriesAndTerritories)
 
 ui_header <- dashboardHeader(title = "COVID19 Template",
