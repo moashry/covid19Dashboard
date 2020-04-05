@@ -49,9 +49,10 @@ ui_tab_dashboard <- tabItem(tabName = "dashboard",
 
                       fluidRow(
                         # A static infoBox
-                        valueBox( "1000000", "Total Cases", icon = icon("fas fa-procedures")),
-                        valueBox( 50000, "Total Deaths", icon = icon("fas fa-sad-tear")),
-                        valueBox( 250000, "Total Recovered", icon = icon("fas fa-heart")),
+                        valueBoxOutput( "totalCases"),
+                        valueBoxOutput( "totalActive"),
+                        valueBoxOutput( "totalDeaths"),
+                        valueBoxOutput("totalRecovered")
                         # Dynamic infoBoxes
                         #infoBoxOutput("progressBox")
                       ),
@@ -60,11 +61,11 @@ ui_tab_dashboard <- tabItem(tabName = "dashboard",
                       fluidRow(
                         box(title = "Daily Cases", status = "primary",
                           solidHeader = TRUE, collapsible = TRUE,
-                          plotlyOutput("plot", height = 250)),
+                          plotlyOutput("dailyCases", height = 250)),
 
                         box(title = "Cumulative Cases", status = "primary",
                           solidHeader = TRUE, collapsible = TRUE,
-                          plotlyOutput("plot2", height = 250))
+                          plotlyOutput("cumulativeCases", height = 250))
                       )
                     )
 
