@@ -26,11 +26,15 @@ ui_sidebar <- dashboardSidebar(
     sidebarMenu(
       
       menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-            
-      menuItem("Source code", icon = icon("file-code-o"), 
-           href = "https://github.com/moashry/covid19Dashboard"),
+      menuItem("Analytics", tabName = "analytics", icon = icon("fas fa-chart-bar"),
+        menuSubItem("Trends","trends"),
+        menuSubItem("Predictive Analytics","predictiveAnalytics")
+      ),
 
-      menuItem("Contact", tabName = "Contact", icon = icon("fad fa-id-badge"))
+      menuItem("Contact", tabName = "Contact", icon = icon("fad fa-id-badge")),
+
+      menuItem("Source code", icon = icon("file-code-o"), 
+           href = "https://github.com/moashry/covid19Dashboard")
     )
   )
 
@@ -45,9 +49,9 @@ ui_tab_dashboard <- tabItem(tabName = "dashboard",
 
                       fluidRow(
                         # A static infoBox
-                        infoBox("Total Cases", 1000000, icon = icon("credit-card")),
-                        infoBox("Total Deaths", 50000, icon = icon("credit-card")),
-                        infoBox("Total Recovered", 250000, icon = icon("credit-card")),
+                        valueBox( "1000000", "Total Cases", icon = icon("fas fa-procedures")),
+                        valueBox( 50000, "Total Deaths", icon = icon("fas fa-sad-tear")),
+                        valueBox( 250000, "Total Recovered", icon = icon("fas fa-heart")),
                         # Dynamic infoBoxes
                         #infoBoxOutput("progressBox")
                       ),
