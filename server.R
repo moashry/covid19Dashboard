@@ -17,7 +17,7 @@ shinyServer(function(input, output) {
   #
   data <- reactive({
     my_data <- read_excel("Data/data.xlsx")
-    data_country <- my_data[my_data$countriesAndTerritories==input$country,]
+    data_country <- my_data[my_data$countriesAndTerritories==input$countryList,]
     data_country <- data_country[order(data_country$dateRep),]
     return(data_country)
   })
