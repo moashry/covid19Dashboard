@@ -1,0 +1,12 @@
+name: covid19Dashboard
+title: covid19Dashboard
+username:
+account: moashry
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2057478
+bundleId: 2984462
+url: https://moashry.shinyapps.io/covid19Dashboard/
+when: 1586312924.24059
+asMultiple: FALSE
+asStatic: FALSE
