@@ -37,7 +37,7 @@ output$mymap <- renderLeaflet({
 observe({
   req(input$timeSlider)
   zoomLevel <- input$mymap_zoom
-  data <- data_atDate(input$timeSlider) %>% addLabel()
+  data <- data_atDate(input$timeSlider-1) %>% addLabel()
 
   leafletProxy("mymap", data = data) %>%
     clearMarkers() %>%
@@ -66,9 +66,40 @@ observe({
 
 })
 
+
+ output$worldwideStatus <- renderPlotly({
+
+    plot_ly(
+    get_data_worldwide(input$timeSlider),
+    x     = ~date,
+    y     = ~value,
+    type  = 'scatter',
+    color = ~var,
+    mode  = 'lines') %>%
+    layout(
+      yaxis = list(title = "# Confirmed Cases"),
+      xaxis = list(title = "Day Sequence")
+    )
+  })
+
+ output$worldwideGrowthRate <- renderPlotly({
+  data <- get_wolrd_daily_growth_rate(input$timeSlider,"confirmed")
+ 
+  plot_ly(
+    data,
+    x     = ~date,
+    y     = ~growth_rate,
+    type  = 'scatter',
+    mode  = 'lines') %>%
+    layout(
+      yaxis = list(title = "Growth Rate",range = c(0,3)),
+      xaxis = list(title = FALSE)
+    )
+  })
+
 output$totalCasesGlobal <- renderValueBox({
     valueBox(
-      format(get_total_confirmed_global(input$timeSlider),big.mark=",",scientific=FALSE),
+      format(get_total_figures_global(input$timeSlider,"confirmed"),big.mark=",",scientific=FALSE),
       "Total Cases", 
       color = "yellow", 
       icon = icon("fas fa-th-list") 
@@ -77,7 +108,7 @@ output$totalCasesGlobal <- renderValueBox({
 
 output$totalDeathsGlobal <- renderValueBox({
     valueBox(
-      format(get_total_deaths_global(input$timeSlider),big.mark=",",scientific=FALSE),
+      format(get_total_figures_global(input$timeSlider,"deaths"),big.mark=",",scientific=FALSE),
       "Total Deaths", 
       color="red", 
       icon = icon("fas fa-frown")    
@@ -86,7 +117,7 @@ output$totalDeathsGlobal <- renderValueBox({
 
 output$totalRecoveredGlobal <- renderValueBox({
     valueBox(
-      format(get_total_recovered_global(input$timeSlider),big.mark=",",scientific=FALSE),
+      format(get_total_figures_global(input$timeSlider,"recovered"),big.mark=",",scientific=FALSE),
       "Total Recovered", 
       color="green", 
       icon = icon("fas fa-heartbeat")
@@ -95,7 +126,7 @@ output$totalRecoveredGlobal <- renderValueBox({
 
 output$totalActiveGlobal<- renderValueBox({
     valueBox(
-      format(get_total_active_global(input$timeSlider),big.mark=",",scientific=FALSE), 
+      format(get_total_figures_global(input$timeSlider,"active"),big.mark=",",scientific=FALSE), 
       "Total Active", 
       color="orange", 
       icon = icon("fas fa-hospital")

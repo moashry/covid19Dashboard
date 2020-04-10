@@ -11,10 +11,12 @@ library("plotly")
 library("DT")
 library("fs")
 library("wbstats")
+library("rvest")
 library("htmltools")
 
 
 source("utils/utils.R", local = T)
+source("utils/crawler.R", local = T)
 
 downloadGithubData <- function() {
   download.file(
@@ -37,13 +39,25 @@ updateData <- function() {
   if (!dir_exists("data")) {
     dir.create('data')
     downloadGithubData()
+    data_worldmeter <- enrich_data_worldmeter()
+  } else if ((!file.exists("data/covid19_data.zip")) || (as.double(Sys.time() - file_info("data/covid19_data.zip")$change_time, units = "hours") > 0.5)) {
+    downloadGithubData()
+    data_worldmeter <- enrich_data_worldmeter()
+  }
+}
+
+updateData_first <- function() {
+  # Download data from Johns Hopkins (https://github.com/CSSEGISandData/COVID-19) if the data is older than 0.5h
+  if (!dir_exists("data")) {
+    dir.create('data')
+    downloadGithubData()
   } else if ((!file.exists("data/covid19_data.zip")) || (as.double(Sys.time() - file_info("data/covid19_data.zip")$change_time, units = "hours") > 0.5)) {
     downloadGithubData()
   }
 }
 
 # Update with start of app
-updateData()
+updateData_first()
 
 # TODO: Still throws a warning but works for now
 data_confirmed <- read_csv("data/time_series_covid19_confirmed_global.csv")
@@ -95,30 +109,64 @@ data_evolution <- data_evolution %>%
   mutate(value_new = value - lag(value, 4, default = 0)) %>%
   ungroup()
 
-rm(data_confirmed, data_confirmed_sub, data_recovered, data_recovered_sub, data_deceased, data_deceased_sub)
+rm(data_confirmed, data_confirmed_sub, data_recovered, data_recovered_sub, data_deaths_sub, data_deaths)
 
 # ---- Download population data ----
-population                                                            <- wb(country = "countries_only", indicator = "SP.POP.TOTL", startdate = 2018, enddate = 2020) %>%
-  select(country, value) %>%
-  rename(population = value)
-countryNamesPop                                                       <- c("Brunei Darussalam", "Congo, Dem. Rep.", "Congo, Rep.", "Czech Republic",
-  "Egypt, Arab Rep.", "Iran, Islamic Rep.", "Korea, Rep.", "St. Lucia", "West Bank and Gaza", "Russian Federation",
-  "Slovak Republic", "United States", "St. Vincent and the Grenadines", "Venezuela, RB")
-countryNamesDat                                                       <- c("Brunei", "Congo (Kinshasa)", "Congo (Brazzaville)", "Czechia", "Egypt", "Iran", "Korea, South",
-  "Saint Lucia", "occupied Palestinian territory", "Russia", "Slovakia", "US", "Saint Vincent and the Grenadines", "Venezuela")
-population[which(population$country %in% countryNamesPop), "country"] <- countryNamesDat
+p <- read_csv("data/extra_data/population_un.csv")
 
+c_in_pop <- c(
+  "Bolivia (Plurinational State of)",
+  "Myanmar",
+  "Brunei Darussalam", 
+  "Democratic Republic of the Congo", 
+  "Congo", 
+  "Iran (Islamic Republic of)",
+  "Côte d'Ivoire",
+  "Republic of Korea",
+  "Lao People's Democratic Republic",
+  "Republic of Moldova", 
+  "Syrian Arab Republic",
+  "Viet Nam",
+  "United Republic of Tanzania",
+  "State of Palestine", 
+  "Russian Federation",
+  "United States of America", 
+  "Venezuela (Bolivarian Republic of)")
+
+c_in_data <- c(
+  "Bolivia",
+  "Burma",
+  "Brunei", 
+  "Congo (Kinshasa)", 
+  "Congo (Brazzaville)", 
+  "Iran",
+  "Cote d'Ivoire",
+  "Korea, South",
+  "Laos",
+  "Moldova",
+  "Syria",
+  "Vietnam",
+  "Tanzania",
+  "West Bank and Gaza", 
+  "Russia", 
+  "US", 
+  "Venezuela")
+p[which(p$country %in% c_in_pop), "country"] <- c_in_data
 
 # Data from wikipedia
-noDataCountries <- data.frame(
-  country    = c("Cruise Ship", "Guadeloupe", "Guernsey", "Holy See", "Jersey", "Martinique", "Reunion", "Taiwan*"),
-  population = c(3700, 395700, 63026, 800, 106800, 376480, 859959, 23780452)
+empty_dc <- data.frame(
+  country    = c("Kosovo","Diamond Princess","MS Zaandam","Cruise Ship", "Guadeloupe", "Guernsey", "Holy See", "Jersey", "Martinique", "Reunion", "Taiwan*"),
+  numeric = (1:11),
+  population = c(1831000,2600,1164,3700, 395700, 63026, 800, 106800, 376480, 859959, 23780452)
 )
-population      <- bind_rows(population, noDataCountries)
+
+p <- bind_rows(p, empty_dc)
+
 
 data_evolution <- data_evolution %>%
-  left_join(population, by = c("Country/Region" = "country"))
-rm(population, countryNamesPop, countryNamesDat, noDataCountries)
+  left_join(p, by = c("Country/Region" = "country"))
+
+rm(p, c_in_data, c_in_pop, empty_dc)
 
 
 write.csv(data_evolution, file = "data/daily_data.csv")
@@ -127,14 +175,14 @@ write.csv(data_evolution, file = "data/daily_data.csv")
 data_atDate <- function(inputDate) {
   data_evolution[which(data_evolution$date == inputDate),] %>%
     distinct() %>%
-    pivot_wider(id_cols = c("Province/State", "Country/Region", "date", "Lat", "Long", "population"), names_from = var, values_from = value) %>%
+    pivot_wider(id_cols = c("Province/State", "Country/Region", "date", "Lat", "Long", "population"), names_from = var, values_from = value )%>%
     filter(confirmed > 0 |
              recovered > 0 |
              deaths > 0 |
              active > 0)
 }
 
-
+data_worldmeter <- enrich_data_worldmeter()
 data_evolution_latest <- data_atDate(max(data_evolution$date))
 
 top5_countries <- data_evolution %>%

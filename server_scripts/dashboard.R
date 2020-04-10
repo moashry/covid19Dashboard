@@ -1,6 +1,6 @@
   output$dailyConfirmedCases <- renderPlotly({
     plot_ly(
-    get_data_daily_cases(input$countryList,"confirmed"),
+    get_data_country(input$countryList,"confirmed"),
     x     = ~date,
     y     = ~value_new,
     type  = 'bar',
@@ -14,7 +14,7 @@
 
   output$cumulativeConfirmedCases <- renderPlotly({
     plot_ly(
-    get_data_daily_cases(input$countryList,"confirmed"),
+    get_data_country(input$countryList,"confirmed"),
     x     = ~date,
     y     = ~value,
     type  = 'scatter',
@@ -28,7 +28,7 @@
 
   output$dailyDeathsCases <- renderPlotly({
     plot_ly(
-    get_data_daily_cases(input$countryList,"deaths"),
+    get_data_country(input$countryList,"deaths"),
     x     = ~date,
     y     = ~value_new,
     color = I("red"),
@@ -42,7 +42,7 @@
 
   output$cumulativeDeathsCases <- renderPlotly({
     plot_ly(
-    get_data_daily_cases(input$countryList,"deaths"),
+    get_data_country(input$countryList,"deaths"),
     x     = ~date,
     y     = ~value,
     type  = 'scatter',
@@ -56,7 +56,7 @@
   
   output$dailyRecoveryCases <- renderPlotly({
     plot_ly(
-    get_data_daily_cases(input$countryList,"recovered"),
+    get_data_country(input$countryList,"recovered"),
     x     = ~date,
     y     = ~value_new,
     color = I("green"),
@@ -70,7 +70,7 @@
 
   output$cumulativeRecoveryCases <- renderPlotly({
     plot_ly(
-    get_data_daily_cases(input$countryList,"recovered"),
+    get_data_country(input$countryList,"recovered"),
     x     = ~date,
     y     = ~value,
     type  = 'scatter',
@@ -84,7 +84,7 @@
 
   output$totalCases <- renderValueBox({
     valueBox(
-      format(get_total_confirmed(input$countryList,input$timeSlider_dashboard),big.mark=",",scientific=FALSE),
+      format(get_total_figures_country(input$countryList,"confirmed"),big.mark=",",scientific=FALSE),
       "Total Cases", 
       color = "yellow", 
       icon = icon("fas fa-th-list")
@@ -93,7 +93,7 @@
    
   output$totalDeaths <- renderValueBox({
     valueBox(
-      format(get_total_deaths(input$countryList,input$timeSlider_dashboard),big.mark=",",scientific=FALSE),
+      format(get_total_figures_country(input$countryList,"deaths"),big.mark=",",scientific=FALSE),
       "Total Deaths", 
       color="red", 
       icon = icon("fas fa-frown")    
@@ -102,7 +102,7 @@
 
 output$totalRecovered <- renderValueBox({
     valueBox(
-      format(get_total_recovered(input$countryList,input$timeSlider_dashboard),big.mark=",",scientific=FALSE),
+      format(get_total_figures_country(input$countryList,"recovered"),big.mark=",",scientific=FALSE),
       "Total Recovered", 
       color="green", 
       icon = icon("fas fa-heartbeat")
@@ -111,7 +111,7 @@ output$totalRecovered <- renderValueBox({
 
 output$totalActive<- renderValueBox({
     valueBox(
-      format(get_total_active(input$countryList,input$timeSlider_dashboard),big.mark=",",scientific=FALSE), 
+      format(get_total_figures_country(input$countryList,"active"),big.mark=",",scientific=FALSE),
       "Total Active", 
       color="orange", 
       icon = icon("fas fa-hospital")
